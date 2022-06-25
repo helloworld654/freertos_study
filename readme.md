@@ -111,6 +111,7 @@
         xTaskCreate(rtos_study_task_b,"study_task_B",2048,NULL,1,rtos_study_task_handle_B);
     }
 
+    /*
     [18:19:35.365] [rtos_study_task_a] try to take mutex  // task A try to take mutex
     [18:19:35.365] [rtos_study_task_a] take the mutex success  // task A take mutex success
     [18:19:35.375] [rtos_study_task_b] try to take mutex  // task B try to take mutex
@@ -125,3 +126,100 @@
     [18:19:37.359] [rtos_study_task_b] give the mutex  // task B give mutex,have used 500ms
     [18:19:37.378] [rtos_study_task_a] take the mutex success  // task A take mutex success second time
     [18:19:37.378] [rtos_study_task_b] try to take mutex  // task B try to take mutex third time
+    */
+
+# EventGroup use example
+
+    EventBits_t xEventGroupSetBits( EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToSet )
+
+    EventBits_t xEventGroupWaitBits( EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToWaitFor,
+     const BaseType_t xClearOnExit, const BaseType_t xWaitForAllBits, TickType_t xTicksToWait )
+    /*
+    xClearOnExit : whether clear bits after exit this api
+    xWaitForAllBits : whether wait for all bits are ready
+    */
+
+    void *event_group_handle;
+
+    static void rtos_event_task_A(void *arg)
+    {
+        printf("\r\n[%s] enter",__func__);
+        event_group_handle = xEventGroupCreate();
+        while(1){
+            vTaskDelay(500/portTICK_PERIOD_MS);
+            printf("\r\n[%s] SET event bit 0x80",__func__);
+            xEventGroupSetBits(event_group_handle,0x80);
+            
+            vTaskDelay(500/portTICK_PERIOD_MS);
+            printf("\r\n[%s] SET event bit 0x800",__func__);
+            xEventGroupSetBits(event_group_handle,0x800);
+        }
+    }
+
+    static void rtos_event_task_B(void *arg)
+    {
+        printf("\r\n[%s] enter",__func__);
+        while(1){
+            if(event_group_handle){
+                printf("\r\n[%s] start wait event 0x80",__func__);
+                if(xEventGroupWaitBits(event_group_handle,0x80,true,false,1000/portTICK_PERIOD_MS)){
+                    printf("\r\n[%s]get the event SUCCESS",__func__);
+                }
+                else{
+                    printf("\r\n[%s]get event timeout",__func__);
+                }
+            }
+            vTaskDelay(10/portTICK_PERIOD_MS);
+        }
+    }
+
+    static void rtos_event_task_C(void *arg)
+    {
+        printf("\r\n[%s] enter",__func__);
+        while(1){
+            if(event_group_handle){
+                printf("\r\n[%s] start wait event 0x880",__func__);
+                if(xEventGroupWaitBits(event_group_handle,0x880,true,true,1000/portTICK_PERIOD_MS)){
+                    printf("\r\n[%s]get the event SUCCESS",__func__);
+                }
+                else{
+                    printf("\r\n[%s]get event timeout",__func__);
+                }
+            }
+            vTaskDelay(10/portTICK_PERIOD_MS);
+        }
+    }
+
+    void task_create_test(void)
+    {
+        xTaskCreate(rtos_event_task_A,"event_task_A",2048,NULL,1,NULL);
+        xTaskCreate(rtos_event_task_B,"event_task_B",2048,NULL,1,NULL);
+        xTaskCreate(rtos_event_task_C,"event_task_C",2048,NULL,1,NULL);
+    }
+
+    /*
+    [20:29:26.643] [rtos_event_task_B] start wait event 0x80
+    [20:29:26.643] [rtos_event_task_C] start wait event 0x880
+
+    [20:29:27.123] [rtos_event_task_A] SET event bit 0x80
+    [20:29:27.123] [rtos_event_task_B]get the event SUCCESS
+    [20:29:27.133] [rtos_event_task_B] start wait event 0x80
+
+    [20:29:27.623] [rtos_event_task_A] SET event bit 0x800
+    [20:29:27.633] [rtos_event_task_C]get the event SUCCESS
+    [20:29:27.643] [rtos_event_task_C] start wait event 0x880
+
+    [20:29:28.134] [rtos_event_task_A] SET event bit 0x80
+    [20:29:28.138] [rtos_event_task_B]get the event SUCCESS
+    [20:29:28.138] [rtos_event_task_C]get the event SUCCESS
+    [20:29:28.138] [rtos_event_task_C] start wait event 0x880
+    [20:29:28.144] [rtos_event_task_B] start wait event 0x80
+
+    [20:29:28.623] [rtos_event_task_A] SET event bit 0x800
+
+    [20:29:29.124] [rtos_event_task_A] SET event bit 0x80
+    [20:29:29.124] [rtos_event_task_C]get the event SUCCESS
+    [20:29:29.133] [rtos_event_task_B]get the event SUCCESS
+    [20:29:29.133] [rtos_event_task_B] start wait event 0x80
+    [20:29:29.143] [rtos_event_task_C] start wait event 0x880
+    */
