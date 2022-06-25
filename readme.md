@@ -223,3 +223,14 @@
     [20:29:29.133] [rtos_event_task_B] start wait event 0x80
     [20:29:29.143] [rtos_event_task_C] start wait event 0x880
     */
+
+# Timer test
+
+    #include "freertos/timers.h"
+    TimerHandle_t xTimerCreate(const char * const pcTimerName,
+                                    const TickType_t xTimerPeriodInTicks,
+                                    const UBaseType_t uxAutoReload,
+                                    void * const pvTimerID,
+                                    TimerCallbackFunction_t pxCallbackFunction );
+    xTimerStart( xTimer, xTicksToWait );
+    void *pvTimerGetTimerID( const TimerHandle_t xTimer );
