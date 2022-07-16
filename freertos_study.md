@@ -13,12 +13,12 @@
                                 const configSTACK_DEPTH_TYPE usStackDepth,
                                 void * const pvParameters,
                                 UBaseType_t uxPriority,
-                                TaskHandle_t * const pxCreatedTask)
+                                TaskHandle_t * const pxCreatedTask)  // 传入 task handle 的地址
     */
     #define RTOS_TASK_STACK_SIZE    2048
     #define RTOS_TASK_PRIORITY    1
 
-    void *rtos_study_task_handle;
+    void *rtos_study_task_handle = NULL;
 
     static void rtos_study_task(void *arg)
     {
@@ -31,12 +31,13 @@
 
     void task_create_test(void)
     {
-        xTaskCreate(rtos_study_task,"study_task",RTOS_TASK_STACK_SIZE,NULL,RTOS_TASK_PRIORITY,rtos_study_task_handle);
+        xTaskCreate(rtos_study_task,"study_task",RTOS_TASK_STACK_SIZE,NULL,RTOS_TASK_PRIORITY,&rtos_study_task_handle);
     }
 
 # Queue use example
 
-    #include "freertos/queue.h"
+    #include "FreeRTOS.h"
+    #include "queue.h"
     #define RTOS_TEST_QUEUE_LEN    0x10
     typedef struct{
         uint8_t type;
@@ -123,6 +124,11 @@
     [18:19:37.378] [rtos_study_task_a] take the mutex success  // task A take mutex success second time
     [18:19:37.378] [rtos_study_task_b] try to take mutex  // task B try to take mutex third time
     */
+
+# 常用 API #
+
+	UBaseType_t uxTaskPriorityGet( const TaskHandle_t xTask )
+    传入 NULL 返回当前 Task Priority
 
 # EventGroup use example
 
