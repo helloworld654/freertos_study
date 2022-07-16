@@ -5,15 +5,16 @@
 
 # Task create function
 
+    #include "FreeRTOS.h"
+    #include "task.h"
+    /*
     BaseType_t xTaskCreate(TaskFunction_t pxTaskCode,
                                 const char * const pcName,
                                 const configSTACK_DEPTH_TYPE usStackDepth,
                                 void * const pvParameters,
                                 UBaseType_t uxPriority,
                                 TaskHandle_t * const pxCreatedTask)
-                           
-    #include "task.h"
-
+    */
     #define RTOS_TASK_STACK_SIZE    2048
     #define RTOS_TASK_PRIORITY    1
 
@@ -30,12 +31,6 @@
 
     void task_create_test(void)
     {
-        /*  BaseType_t xTaskCreate(TaskFunction_t pxTaskCode,
-							const char * const pcName,
-							const configSTACK_DEPTH_TYPE usStackDepth,
-							void * const pvParameters,
-							UBaseType_t uxPriority,
-							TaskHandle_t * const pxCreatedTask )  */
         xTaskCreate(rtos_study_task,"study_task",RTOS_TASK_STACK_SIZE,NULL,RTOS_TASK_PRIORITY,rtos_study_task_handle);
     }
 

@@ -223,7 +223,7 @@ static void vTaskStart(void *pvParameters)
 		/* °´¼üÉ¨Ãè */
 		// bsp_KeyScan();
         vTaskDelay(1000);
-		printf("hello world 123456\r\n");
+		printf("[%s] hello world\r\n",__func__);
     }
 }
 
