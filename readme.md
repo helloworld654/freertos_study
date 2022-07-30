@@ -1,5 +1,6 @@
 
-# [freertos study](freertos_study.md) #
+# [Freertos Study](freertos_study.md) #
 
-# [tools info](tools_info.md) #
+# [Tools Info](tools_info.md) #
 
+# [Data Structure](data_structure.md) #
